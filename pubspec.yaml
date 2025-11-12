@@ -1,0 +1,20 @@
+name: flutter_reusable_youtube_player
+description: A reusable YouTube player package for Flutter with customizable controls and easy integration.
+version: 0.0.1
+homepage: https://github.com/stepanic/flutter_reusable_youtube_player
+
+environment:
+  sdk: ^3.9.2
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  youtube_player_flutter: ^9.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
