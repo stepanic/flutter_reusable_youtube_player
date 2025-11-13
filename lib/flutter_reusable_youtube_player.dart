@@ -10,6 +10,7 @@ export 'src/controllers/youtube_player_controller.dart';
 // Widgets
 export 'src/widgets/youtube_player_widget.dart';
 export 'src/widgets/player_controls.dart';
+export 'src/widgets/fullscreen_youtube_player.dart';
 
 // Models
 export 'src/models/player_config.dart';

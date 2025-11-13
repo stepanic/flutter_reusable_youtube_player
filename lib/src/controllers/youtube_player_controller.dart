@@ -47,6 +47,7 @@ class ReusableYoutubePlayerController extends ChangeNotifier {
         showLiveFullscreenButton: config.showFullscreenButton,
         controlsVisibleAtStart: config.showControls,
         enableCaption: config.enableCaption,
+        captionLanguage: config.captionLanguage ?? 'en',
       ),
     );
 

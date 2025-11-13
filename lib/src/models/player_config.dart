@@ -30,6 +30,9 @@ class PlayerConfig {
   /// Whether to hide YouTube player UI elements (big play button, pause overlay, thumbnails)
   final bool hideYouTubeUI;
 
+  /// Caption language code (e.g., 'en' for English, 'es' for Spanish)
+  final String? captionLanguage;
+
   PlayerConfig({
     this.showControls = true,
     this.showFullscreenButton = true,
@@ -41,6 +44,7 @@ class PlayerConfig {
     this.showCustomControls = false,
     this.autoPlay = false,
     this.hideYouTubeUI = false,
+    this.captionLanguage,
   });
 
   PlayerConfig copyWith({
@@ -54,6 +58,7 @@ class PlayerConfig {
     bool? showCustomControls,
     bool? autoPlay,
     bool? hideYouTubeUI,
+    String? captionLanguage,
   }) {
     return PlayerConfig(
       showControls: showControls ?? this.showControls,
@@ -66,6 +71,7 @@ class PlayerConfig {
       showCustomControls: showCustomControls ?? this.showCustomControls,
       autoPlay: autoPlay ?? this.autoPlay,
       hideYouTubeUI: hideYouTubeUI ?? this.hideYouTubeUI,
+      captionLanguage: captionLanguage ?? this.captionLanguage,
     );
   }
 }
