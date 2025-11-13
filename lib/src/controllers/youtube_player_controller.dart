@@ -48,6 +48,8 @@ class ReusableYoutubePlayerController extends ChangeNotifier {
         controlsVisibleAtStart: config.showControls,
         enableCaption: config.enableCaption,
         captionLanguage: config.captionLanguage ?? 'en',
+        hideControls: true,
+        hideThumbnail: true,
       ),
     );
 
