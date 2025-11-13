@@ -90,7 +90,7 @@ class _ReusableYoutubePlayerState extends State<ReusableYoutubePlayer> {
           children: [
             YoutubePlayer(
               controller: widget.controller.youtubeController,
-              showVideoProgressIndicator: true,
+              showVideoProgressIndicator: !widget.controller.config.hideYouTubeUI,
               progressIndicatorColor: Colors.red,
               progressColors: const ProgressBarColors(
                 playedColor: Colors.red,
@@ -100,18 +100,6 @@ class _ReusableYoutubePlayerState extends State<ReusableYoutubePlayer> {
                   ? []
                   : null, // Hide default controls if custom controls are shown
             ),
-
-            // Overlay to hide YouTube UI elements (big play button, thumbnails, pause overlay)
-            if (widget.controller.config.hideYouTubeUI)
-              Positioned.fill(
-                child: Container(
-                  color: Colors.black.withOpacity(0.01), // Nearly transparent but blocks UI
-                  child: IgnorePointer(
-                    ignoring: true, // Don't block video interaction
-                    child: Container(),
-                  ),
-                ),
-              ),
           ],
         ),
 
