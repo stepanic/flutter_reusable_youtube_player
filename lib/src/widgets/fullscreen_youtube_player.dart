@@ -14,10 +14,18 @@ class FullscreenYoutubePlayer extends StatefulWidget {
   /// Caption language code (e.g., 'en' for English, 'es' for Spanish)
   final String? captionLanguage;
 
+  /// Whether to wrap the player in a SafeArea (default: true)
+  final bool useSafeArea;
+
+  /// Whether to wrap the player in a Scaffold (default: true)
+  final bool useScaffold;
+
   const FullscreenYoutubePlayer({
     super.key,
     required this.videoId,
     this.captionLanguage,
+    this.useSafeArea = true,
+    this.useScaffold = true,
   });
 
   @override
@@ -99,10 +107,7 @@ class _FullscreenYoutubePlayerState extends State<FullscreenYoutubePlayer> {
   Widget build(BuildContext context) {
     return OrientationBuilder(
       builder: (context, orientation) {
-        return Scaffold(
-          backgroundColor: Colors.black,
-          body: SafeArea(
-            child: Stack(
+        final playerStack = Stack(
               children: [
             // YouTube Player
             Align(
@@ -315,9 +320,20 @@ class _FullscreenYoutubePlayerState extends State<FullscreenYoutubePlayer> {
                 ),
               ),
               ],
-            ),
-          ),
-        );
+            );
+
+        // Wrap in SafeArea if requested
+        Widget body = widget.useSafeArea ? SafeArea(child: playerStack) : playerStack;
+
+        // Wrap in Scaffold if requested
+        if (widget.useScaffold) {
+          return Scaffold(
+            backgroundColor: Colors.black,
+            body: body,
+          );
+        }
+
+        return body;
       },
     );
   }
