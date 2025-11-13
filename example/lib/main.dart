@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_reusable_youtube_player/flutter_reusable_youtube_player.dart';
-import 'flutterflow_example.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,234 +11,226 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Reusable YouTube Player Demo',
+      title: 'YouTube Player Demo',
       theme: ThemeData(
         primarySwatch: Colors.red,
         useMaterial3: true,
       ),
-      home: const PlayerDemoPage(),
+      home: const SimplePlayerPage(),
     );
   }
 }
 
-class PlayerDemoPage extends StatefulWidget {
-  const PlayerDemoPage({super.key});
+class SimplePlayerPage extends StatefulWidget {
+  const SimplePlayerPage({super.key});
 
   @override
-  State<PlayerDemoPage> createState() => _PlayerDemoPageState();
+  State<SimplePlayerPage> createState() => _SimplePlayerPageState();
 }
 
-class _PlayerDemoPageState extends State<PlayerDemoPage> {
+class _SimplePlayerPageState extends State<SimplePlayerPage> {
   late ReusableYoutubePlayerController _controller;
-  final TextEditingController _urlController = TextEditingController();
 
-  // Sample video IDs for testing
-  final List<Map<String, String>> _sampleVideos = [
-    {
-      'id': 'YVjxNq2vCC4',
-      'title': 'Test Unlisted Video',
-    },
-    {
-      'id': 'dQw4w9WgXcQ',
-      'title': 'Rick Astley - Never Gonna Give You Up',
-    },
-    {
-      'id': 'jNQXAC9IVRw',
-      'title': 'Me at the zoo',
-    },
-    {
-      'id': 'kJQP7kiw5Fk',
-      'title': 'Luis Fonsi - Despacito',
-    },
-  ];
+  // State variables for external controls
+  int _durationTimeInSeconds = 0;
+  int _currentTimeInSeconds = 0;
+  double _videoTimeSliderValue = 0;
+  bool _isSliderChangeInProgress = false;
+  bool _isPlaying = false;
 
   @override
   void initState() {
     super.initState();
+
+    const autoPlay = true; // Change this to false to start paused
+
     _controller = ReusableYoutubePlayerController(
-      videoId: _sampleVideos[0]['id']!,
+      videoId: 'YVjxNq2vCC4',
       config: PlayerConfig(
-        autoPlay: false,
-        showCustomControls: true,
-        enableCaption: true,
+        autoPlay: autoPlay,
+        showControls: false,        // Hide native YouTube controls
+        showCustomControls: false,  // Hide our custom overlay controls
+        hideYouTubeUI: true,        // Hide YouTube big play button, thumbnails, pause overlay
       ),
     );
+
+    // Set initial playing state based on autoPlay
+    _isPlaying = autoPlay;
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    _urlController.dispose();
     super.dispose();
-  }
-
-  void _loadVideo(String videoId) {
-    _controller.loadVideo(videoId);
-  }
-
-  void _loadVideoFromUrl() {
-    final url = _urlController.text.trim();
-    final videoId = YoutubeHelpers.extractVideoId(url);
-
-    if (videoId != null && YoutubeHelpers.isValidVideoId(videoId)) {
-      _loadVideo(videoId);
-      _urlController.clear();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Loading video: $videoId')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid YouTube URL or video ID')),
-      );
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Reusable YouTube Player Demo'),
-        backgroundColor: Colors.red,
-        foregroundColor: Colors.white,
-        actions: [
-          // Button to open FlutterFlow example
-          IconButton(
-            icon: const Icon(Icons.open_in_new),
-            tooltip: 'FlutterFlow Example',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const FlutterFlowExamplePage(),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: Stack(
           children: [
             // YouTube Player
-            ReusableYoutubePlayer(
-              controller: _controller,
-              showCustomControls: true,
-            ),
+            Align(
+              alignment: Alignment.center,
+              child: ReusableYoutubePlayer(
+                controller: _controller,
+                showCustomControls: false,
+                // Callbacks for tracking time
+                onDurationFetched: (durationInSeconds) async {
+                  if (durationInSeconds > 0 && _durationTimeInSeconds == 0) {
+                    setState(() {
+                      _durationTimeInSeconds = durationInSeconds;
+                    });
+                  }
+                },
+                onCurrentTimeFetched: (currentTimeInSeconds) async {
+                  if (currentTimeInSeconds > 0) {
+                    setState(() {
+                      _currentTimeInSeconds = currentTimeInSeconds;
+                    });
 
-            const SizedBox(height: 16),
-
-            // URL Input
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Text(
-                    'Load Video by URL',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _urlController,
-                          decoration: const InputDecoration(
-                            hintText: 'Enter YouTube URL or video ID',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      ElevatedButton(
-                        onPressed: _loadVideoFromUrl,
-                        child: const Text('Load'),
-                      ),
-                    ],
-                  ),
-                ],
+                    // Update slider if not being dragged
+                    if (!_isSliderChangeInProgress) {
+                      setState(() {
+                        _videoTimeSliderValue = currentTimeInSeconds.toDouble();
+                      });
+                    }
+                  }
+                },
               ),
             ),
 
-            // Sample Videos
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Text(
-                    'Sample Videos',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  ..._sampleVideos.map((video) {
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      child: ListTile(
-                        leading: Image.network(
-                          YoutubeHelpers.getThumbnailUrl(
-                            video['id']!,
-                            quality: ThumbnailQuality.medium,
-                          ),
-                          width: 120,
-                          height: 90,
-                          fit: BoxFit.cover,
-                        ),
-                        title: Text(video['title']!),
-                        subtitle: Text('ID: ${video['id']}'),
-                        trailing: const Icon(Icons.play_arrow),
-                        onTap: () => _loadVideo(video['id']!),
-                      ),
-                    );
-                  }),
-                ],
+            // Transparent overlay to block YouTube player controls
+            Positioned.fill(
+              child: GestureDetector(
+                onTap: () {
+                  // Absorb taps to prevent YouTube controls from showing
+                },
+                child: Container(
+                  color: Colors.transparent,
+                ),
               ),
             ),
 
-            // Player Controls
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+            // External controls at bottom
+            Positioned(
+              bottom: 24,
+              left: 0,
+              right: 0,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Player Controls',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
+                  // Play/Pause and Seek buttons
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      ElevatedButton.icon(
-                        onPressed: () => _controller.play(),
-                        icon: const Icon(Icons.play_arrow),
-                        label: const Text('Play'),
-                      ),
-                      ElevatedButton.icon(
-                        onPressed: () => _controller.pause(),
-                        icon: const Icon(Icons.pause),
-                        label: const Text('Pause'),
-                      ),
-                      ElevatedButton.icon(
-                        onPressed: () => _controller.toggleMute(),
-                        icon: Icon(
-                          _controller.isMuted
-                              ? Icons.volume_off
-                              : Icons.volume_up,
+                      // Backward 10 seconds
+                      if (_isPlaying)
+                        IconButton(
+                          icon: const Icon(Icons.replay_10_rounded, color: Colors.white, size: 32),
+                          onPressed: () {
+                            _controller.seekVideoSecondsFromCurrentTime(-10);
+                          },
                         ),
-                        label: Text(_controller.isMuted ? 'Unmute' : 'Mute'),
-                      ),
+
+                      // Play button
+                      if (!_isPlaying)
+                        IconButton(
+                          icon: const Icon(Icons.play_arrow, color: Colors.white, size: 48),
+                          onPressed: () {
+                            setState(() {
+                              _isPlaying = true;
+                            });
+                            _controller.playVideo();
+                          },
+                        ),
+
+                      // Pause button
+                      if (_isPlaying)
+                        IconButton(
+                          icon: const Icon(Icons.pause, color: Colors.white, size: 48),
+                          onPressed: () {
+                            setState(() {
+                              _isPlaying = false;
+                            });
+                            _controller.pauseVideo();
+                          },
+                        ),
+
+                      // Forward 10 seconds
+                      if (_isPlaying)
+                        IconButton(
+                          icon: const Icon(Icons.forward_10_rounded, color: Colors.white, size: 32),
+                          onPressed: () {
+                            _controller.seekVideoSecondsFromCurrentTime(10);
+                          },
+                        ),
                     ],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Time and slider
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Row(
+                      children: [
+                        // Current time
+                        Text(
+                          YoutubeHelpers.formatSecondsToMinutesAndSeconds(_currentTimeInSeconds),
+                          style: const TextStyle(color: Colors.white, fontSize: 14),
+                        ),
+
+                        const SizedBox(width: 8),
+
+                        // Slider
+                        if (_durationTimeInSeconds > 0)
+                          Expanded(
+                            child: SliderTheme(
+                              data: SliderThemeData(
+                                activeTrackColor: Colors.red,
+                                inactiveTrackColor: Colors.red.withOpacity(0.3),
+                                thumbColor: Colors.red,
+                                overlayColor: Colors.red.withOpacity(0.2),
+                              ),
+                              child: Slider(
+                                min: 0.0,
+                                max: _durationTimeInSeconds.toDouble(),
+                                value: _videoTimeSliderValue.clamp(0.0, _durationTimeInSeconds.toDouble()),
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    _videoTimeSliderValue = newValue;
+                                  });
+                                },
+                                onChangeStart: (value) {
+                                  _isSliderChangeInProgress = true;
+                                },
+                                onChangeEnd: (value) {
+                                  _isSliderChangeInProgress = false;
+
+                                  // Seek video to specific seconds
+                                  _controller.seekVideoTo(value);
+
+                                  // Update current time
+                                  setState(() {
+                                    _currentTimeInSeconds = value.toInt();
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+
+                        const SizedBox(width: 8),
+
+                        // Duration
+                        Text(
+                          YoutubeHelpers.formatSecondsToMinutesAndSeconds(_durationTimeInSeconds),
+                          style: const TextStyle(color: Colors.white, fontSize: 14),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

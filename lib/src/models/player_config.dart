@@ -27,6 +27,9 @@ class PlayerConfig {
   /// Whether to autoplay the video
   final bool autoPlay;
 
+  /// Whether to hide YouTube player UI elements (big play button, pause overlay, thumbnails)
+  final bool hideYouTubeUI;
+
   PlayerConfig({
     this.showControls = true,
     this.showFullscreenButton = true,
@@ -37,6 +40,7 @@ class PlayerConfig {
     this.aspectRatio = 16 / 9,
     this.showCustomControls = false,
     this.autoPlay = false,
+    this.hideYouTubeUI = false,
   });
 
   PlayerConfig copyWith({
@@ -49,6 +53,7 @@ class PlayerConfig {
     double? aspectRatio,
     bool? showCustomControls,
     bool? autoPlay,
+    bool? hideYouTubeUI,
   }) {
     return PlayerConfig(
       showControls: showControls ?? this.showControls,
@@ -60,6 +65,7 @@ class PlayerConfig {
       aspectRatio: aspectRatio ?? this.aspectRatio,
       showCustomControls: showCustomControls ?? this.showCustomControls,
       autoPlay: autoPlay ?? this.autoPlay,
+      hideYouTubeUI: hideYouTubeUI ?? this.hideYouTubeUI,
     );
   }
 }
