@@ -15,6 +15,8 @@ class ReusableYoutubePlayerController extends ChangeNotifier {
   bool _isMuted = false;
   Duration _currentPosition = Duration.zero;
   Duration _totalDuration = Duration.zero;
+  bool _showTransitionOverlay = false;
+  Timer? _transitionTimer;
 
   ReusableYoutubePlayerController({
     required String videoId,
@@ -30,6 +32,7 @@ class ReusableYoutubePlayerController extends ChangeNotifier {
   bool get isMuted => _isMuted;
   Duration get currentPosition => _currentPosition;
   Duration get totalDuration => _totalDuration;
+  bool get showTransitionOverlay => _showTransitionOverlay;
 
   /// Get current time in seconds (FlutterFlow compatible)
   Future<double> get currentTime async => _currentPosition.inSeconds.toDouble();
@@ -45,11 +48,14 @@ class ReusableYoutubePlayerController extends ChangeNotifier {
         mute: config.mute,
         loop: config.loop,
         showLiveFullscreenButton: config.showFullscreenButton,
-        controlsVisibleAtStart: config.showControls,
+        controlsVisibleAtStart: false, // Always start with controls hidden
         enableCaption: config.enableCaption,
         captionLanguage: config.captionLanguage ?? 'en',
         hideControls: true,
         hideThumbnail: true,
+        disableDragSeek: true, // Prevent drag seeking which might show controls
+        forceHD: false,
+        useHybridComposition: true, // Better rendering for WebView
       ),
     );
 
@@ -80,14 +86,31 @@ class ReusableYoutubePlayerController extends ChangeNotifier {
     });
   }
 
+  /// Show transition overlay briefly to hide YouTube controls flash
+  void _showTransitionOverlayBriefly() {
+    if (!config.preventControlsFlash) return;
+
+    _showTransitionOverlay = true;
+    notifyListeners();
+
+    _transitionTimer?.cancel();
+    // Increase duration to 500ms to ensure controls are fully hidden
+    _transitionTimer = Timer(const Duration(milliseconds: 500), () {
+      _showTransitionOverlay = false;
+      notifyListeners();
+    });
+  }
+
   /// Playback controls
   Future<void> play() async {
+    _showTransitionOverlayBriefly();
     _youtubeController.play();
     _isPlaying = true;
     notifyListeners();
   }
 
   Future<void> pause() async {
+    _showTransitionOverlayBriefly();
     _youtubeController.pause();
     _isPlaying = false;
     notifyListeners();
@@ -111,6 +134,7 @@ class ReusableYoutubePlayerController extends ChangeNotifier {
 
   /// Play video (FlutterFlow API)
   void playVideo() {
+    _showTransitionOverlayBriefly();
     _youtubeController.play();
     _isPlaying = true;
     notifyListeners();
@@ -118,6 +142,7 @@ class ReusableYoutubePlayerController extends ChangeNotifier {
 
   /// Pause video (FlutterFlow API)
   void pauseVideo() {
+    _showTransitionOverlayBriefly();
     _youtubeController.pause();
     _isPlaying = false;
     notifyListeners();
@@ -187,6 +212,7 @@ class ReusableYoutubePlayerController extends ChangeNotifier {
   @override
   void dispose() {
     _timer?.cancel();
+    _transitionTimer?.cancel();
     _youtubeController.dispose();
     super.dispose();
   }

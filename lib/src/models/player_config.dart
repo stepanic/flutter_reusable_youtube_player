@@ -33,6 +33,9 @@ class PlayerConfig {
   /// Caption language code (e.g., 'en' for English, 'es' for Spanish)
   final String? captionLanguage;
 
+  /// Whether to prevent flash of controls during play/pause transitions
+  final bool preventControlsFlash;
+
   PlayerConfig({
     this.showControls = true,
     this.showFullscreenButton = true,
@@ -45,6 +48,7 @@ class PlayerConfig {
     this.autoPlay = false,
     this.hideYouTubeUI = false,
     this.captionLanguage,
+    this.preventControlsFlash = false,
   });
 
   PlayerConfig copyWith({
@@ -59,6 +63,7 @@ class PlayerConfig {
     bool? autoPlay,
     bool? hideYouTubeUI,
     String? captionLanguage,
+    bool? preventControlsFlash,
   }) {
     return PlayerConfig(
       showControls: showControls ?? this.showControls,
@@ -72,6 +77,7 @@ class PlayerConfig {
       autoPlay: autoPlay ?? this.autoPlay,
       hideYouTubeUI: hideYouTubeUI ?? this.hideYouTubeUI,
       captionLanguage: captionLanguage ?? this.captionLanguage,
+      preventControlsFlash: preventControlsFlash ?? this.preventControlsFlash,
     );
   }
 }

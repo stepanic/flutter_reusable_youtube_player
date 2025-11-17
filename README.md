@@ -21,11 +21,19 @@ A customizable and reusable YouTube player widget for Flutter applications. Easy
 
 ## Installation
 
+### Using the fork with CSS injection (Recommended for hiding controls)
+
+This package uses a forked version of `youtube_player_flutter` that includes CSS injection to hide YouTube player controls.
+
 Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
   flutter_reusable_youtube_player: ^0.0.1
+  youtube_player_flutter:
+    git:
+      url: https://github.com/stepanic/youtube_player_flutter.git
+      path: packages/youtube_player_flutter
 ```
 
 Then run:
@@ -33,6 +41,15 @@ Then run:
 ```bash
 flutter pub get
 ```
+
+### Standard installation (without control hiding)
+
+```yaml
+dependencies:
+  flutter_reusable_youtube_player: ^0.0.1
+```
+
+**Note**: The standard installation will show brief flashes of YouTube controls during play/pause transitions. Use the fork for optimal experience.
 
 ## Usage
 
@@ -105,8 +122,21 @@ PlayerConfig(
   aspectRatio: 16 / 9,         // Player aspect ratio
   showCustomControls: false,    // Show custom overlay controls
   autoPlay: false,              // Autoplay video
+  hideYouTubeUI: false,         // Hide YouTube UI elements (play button, thumbnails)
+  preventControlsFlash: true,   // Prevent flash of YouTube controls during play/pause (default: false)
 )
 ```
+
+**Note on `preventControlsFlash`**: When enabled, this feature shows a brief (500ms) black overlay during play/pause transitions to hide the flash of native YouTube controls.
+
+**For best results**: Use the forked version of `youtube_player_flutter` (see Installation section) which includes JavaScript that continuously attempts to inject CSS into YouTube's iframe to hide controls like `#player-controls`, `.ytp-chrome-top`, `.ytp-title`, and `.ytp-gradient-top`.
+
+**How it works**:
+1. The fork includes JavaScript that runs every 100ms attempting to inject CSS into the YouTube iframe
+2. The overlay provides additional protection during state transitions
+3. Due to Cross-Origin policies, the CSS injection may or may not work depending on browser security settings, but the overlay ensures controls are always hidden during transitions
+
+Set to `false` (default) to allow YouTube's native control animations.
 
 ### Helper Utilities
 
