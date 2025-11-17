@@ -295,9 +295,11 @@ packages:
   youtube_player_flutter:
     dependency: transitive
     description:
-      path: "/Users/ms/git/stepanic/youtube_player_flutter/packages/youtube_player_flutter"
-      relative: false
-    source: path
+      path: "packages/youtube_player_flutter"
+      ref: develop
+      resolved-ref: "0f361d886ffb62f45c5114c4041ce979ebe996ca"
+      url: "https://github.com/stepanic/youtube_player_flutter.git"
+    source: git
     version: "9.1.3"
 sdks:
   dart: ">=3.9.2 <4.0.0"
