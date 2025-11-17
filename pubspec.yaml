@@ -11,7 +11,10 @@ dependencies:
   flutter:
     sdk: flutter
   youtube_player_flutter:
-    path: /Users/ms/git/stepanic/youtube_player_flutter/packages/youtube_player_flutter
+    git:
+      url: https://github.com/stepanic/youtube_player_flutter.git
+      ref: develop
+      path: packages/youtube_player_flutter
 
 dev_dependencies:
   flutter_test:
