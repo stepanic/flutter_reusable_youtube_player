@@ -33,6 +33,7 @@ dependencies:
   youtube_player_flutter:
     git:
       url: https://github.com/stepanic/youtube_player_flutter.git
+      ref: develop
       path: packages/youtube_player_flutter
 ```
 
