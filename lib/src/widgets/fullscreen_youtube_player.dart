@@ -192,6 +192,7 @@ class _FullscreenYoutubePlayerState extends State<FullscreenYoutubePlayer> {
                         // Play/Pause and Seek buttons
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             // Backward 10 seconds
                             if (_isPlaying)
@@ -205,7 +206,7 @@ class _FullscreenYoutubePlayerState extends State<FullscreenYoutubePlayer> {
                             // Play button
                             if (!_isPlaying)
                               IconButton(
-                                icon: const Icon(Icons.play_arrow, color: Colors.white, size: 48),
+                                icon: const Icon(Icons.play_arrow, color: Colors.white, size: 32),
                                 onPressed: () {
                                   setState(() {
                                     _isPlaying = true;
@@ -217,7 +218,7 @@ class _FullscreenYoutubePlayerState extends State<FullscreenYoutubePlayer> {
                             // Pause button
                             if (_isPlaying)
                               IconButton(
-                                icon: const Icon(Icons.pause, color: Colors.white, size: 48),
+                                icon: const Icon(Icons.pause, color: Colors.white, size: 32),
                                 onPressed: () {
                                   setState(() {
                                     _isPlaying = false;
